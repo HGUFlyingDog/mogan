@@ -234,9 +234,8 @@ qt_tm_widget_rep::qt_tm_widget_rep (int mask, command _quit)
       pdfViewerWidget (nullptr), pdfTabMode (false), currentPdfPath (""),
       lastLoadedPdfPath (""), chatContentWidget (nullptr), chatTabMode (false),
       chatSideDock (nullptr), pdfOutlineDock (nullptr),
-      chatSidebarToggleBtn (nullptr),
-      chatSidebarMode (false), chatSidebarModeMemory_ (false),
-      centralWidgetUpdatesFrozen_ (false) {
+      chatSidebarToggleBtn (nullptr), chatSidebarMode (false),
+      chatSidebarModeMemory_ (false), centralWidgetUpdatesFrozen_ (false) {
   type= texmacs_widget;
 
   main_widget= concrete (::glue_widget (true, true, 1, 1));
@@ -1149,8 +1148,10 @@ qt_tm_widget_rep::sync_startup_tab_mode () {
       pdfViewerWidget= new PDFReaderWidget (centralwidget ());
       // 连接大纲提取 → dock 填充（仅连一次）
       if (pdfOutlineDock) {
-        QObject::connect (pdfViewerWidget, &PDFReaderWidget::outlineLoaded,
-                          pdfOutlineDock, static_cast<void (OutlineWidget::*) (const QVector<PdfOutlineItem>&)> (&OutlineWidget::setOutline));
+        QObject::connect (
+            pdfViewerWidget, &PDFReaderWidget::outlineLoaded, pdfOutlineDock,
+            static_cast<void (OutlineWidget::*) (
+                const QVector<PdfOutlineItem>&)> (&OutlineWidget::setOutline));
       }
     }
     show_widget_in_layout (pdfViewerWidget, layout);
@@ -1510,8 +1511,7 @@ qt_tm_widget_rep::update_visibility () {
     new_tabVisibility       = true;
     new_titleVisibility     = true;
     new_pdfToolBarVisibility= true;
-    new_pdfOutlineVisibility=
-        (pdfOutlineDock && pdfOutlineDock->hasContent ());
+    new_pdfOutlineVisibility= (pdfOutlineDock && pdfOutlineDock->hasContent ());
   }
   if (XOR (old_mainVisibility, new_mainVisibility)) {
     mainToolBar->setVisible (new_mainVisibility);

@@ -16,8 +16,7 @@ class OutlineWidget : public QDockWidget {
   Q_OBJECT
 
 public:
-  explicit OutlineWidget (const QString& title,
-                          QWidget* parent= nullptr);
+  explicit OutlineWidget (const QString& title, QWidget* parent= nullptr);
 
   void setOutline (const QVector<PdfOutlineItem>& outline);
   void setOutline (const QVector<OutlineItem>& outline);
@@ -35,8 +34,7 @@ signals:
 private:
   void buildTree (const QVector<PdfOutlineItem>& items,
                   QTreeWidgetItem*               parent);
-  void buildTree (const QVector<OutlineItem>& items,
-                  QTreeWidgetItem*               parent);
+  void buildTree (const QVector<OutlineItem>& items, QTreeWidgetItem* parent);
 
   QTreeWidget* tree_;
 };

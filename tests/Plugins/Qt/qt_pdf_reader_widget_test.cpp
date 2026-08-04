@@ -44,8 +44,7 @@ private slots:
 
   void init () {
     init_lolly ();
-    qRegisterMetaType<QVector<PdfOutlineItem>> (
-        "QVector<PdfOutlineItem>");
+    qRegisterMetaType<QVector<PdfOutlineItem>> ("QVector<PdfOutlineItem>");
   }
 
   void cleanup () { cleanup_qt_top_level_widgets (); }
@@ -1500,7 +1499,7 @@ private slots:
     QTest::qWait (200);
 
     QCOMPARE (spy.count (), 1);
-    QList<QVariant> args= spy.takeFirst ();
+    QList<QVariant>         args= spy.takeFirst ();
     QVector<PdfOutlineItem> outline=
         args.at (0).value<QVector<PdfOutlineItem>> ();
     QVERIFY (outline.isEmpty ());
@@ -1516,8 +1515,8 @@ private slots:
     QSignalSpy spy (widget,
                     SIGNAL (outlineLoaded (const QVector<PdfOutlineItem>&)));
 
-    url pdfUrl= url_system (
-        "$TEXMACS_PATH/tests/PDF/quartus_manual_with_outline.pdf");
+    url pdfUrl=
+        url_system ("$TEXMACS_PATH/tests/PDF/quartus_manual_with_outline.pdf");
     if (is_regular (pdfUrl)) {
       widget->loadFromFile (to_qstring (as_string (pdfUrl)));
     }
@@ -1525,7 +1524,7 @@ private slots:
     QTest::qWait (200);
 
     QCOMPARE (spy.count (), 1);
-    QList<QVariant> args= spy.takeFirst ();
+    QList<QVariant>         args= spy.takeFirst ();
     QVector<PdfOutlineItem> outline=
         args.at (0).value<QVector<PdfOutlineItem>> ();
     // 该 PDF 应至少包含一个大纲条目

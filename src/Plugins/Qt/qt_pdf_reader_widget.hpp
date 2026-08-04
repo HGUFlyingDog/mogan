@@ -31,9 +31,9 @@ struct PdfLink {
  * @brief PDF 大纲（书签）条目，对应 fz_outline 的一个节点
  */
 struct PdfOutlineItem {
-  QString                 title;     // 节点标题
-  int                     page;      // 解析后的目标页（0-based），-1 表示未解析
-  QVector<PdfOutlineItem> children;  // 子节点（fz_outline::down）
+  QString                 title;    // 节点标题
+  int                     page;     // 解析后的目标页（0-based），-1 表示未解析
+  QVector<PdfOutlineItem> children; // 子节点（fz_outline::down）
 };
 
 /**
@@ -41,9 +41,9 @@ struct PdfOutlineItem {
  * target 含义由使用方解释：PDF 模式为页码字符串，编辑器模式为文档树路径。
  */
 struct OutlineItem {
-  QString               title;     // 节点标题
-  QString               target;    // 导航目标（页码或路径字符串）
-  QVector<OutlineItem>  children;  // 子节点
+  QString              title;    // 节点标题
+  QString              target;   // 导航目标（页码或路径字符串）
+  QVector<OutlineItem> children; // 子节点
 };
 
 /**

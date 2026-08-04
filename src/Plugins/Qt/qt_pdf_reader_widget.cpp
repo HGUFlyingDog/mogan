@@ -1138,7 +1138,8 @@ PDFReaderWidget::extractOutline () {
         pdfData_.size ());
     stream= fz_open_buffer (ctx, buf);
     doc   = fz_open_document_with_stream (ctx, "pdf", stream);
-    if (!doc) fz_throw (ctx, FZ_ERROR_GENERIC, "Failed to open PDF for outline");
+    if (!doc)
+      fz_throw (ctx, FZ_ERROR_GENERIC, "Failed to open PDF for outline");
 
     fz_outline* outline= fz_load_outline (ctx, doc);
     if (outline) {

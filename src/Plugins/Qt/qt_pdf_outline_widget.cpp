@@ -9,11 +9,11 @@
 #include <QHeaderView>
 #include <QTreeWidgetItem>
 
-#include "qt_pdf_reader_widget.hpp"
+#include "converter.hpp" // cork_to_utf8
 #include "qt_dpi_utils.hpp"
+#include "qt_pdf_reader_widget.hpp"
 #include "qt_utilities.hpp" // utf8_to_qstring
 #include "s7_tm.hpp"
-#include "converter.hpp" // cork_to_utf8
 #include "sys_utils.hpp" // get_env
 
 OutlineWidget::OutlineWidget (const QString& title, QWidget* parent)
@@ -21,7 +21,8 @@ OutlineWidget::OutlineWidget (const QString& title, QWidget* parent)
   // 禁用标题栏，风格与 leftTools 一致
   setTitleBarWidget (new QWidget ());
   setAllowedAreas (Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  setFeatures (QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable |
+  setFeatures (QDockWidget::DockWidgetClosable |
+               QDockWidget::DockWidgetMovable |
                QDockWidget::DockWidgetFloatable);
   setMinimumWidth (DpiUtils::scaled (200));
 
@@ -33,19 +34,20 @@ OutlineWidget::OutlineWidget (const QString& title, QWidget* parent)
 
   setWidget (tree_);
 
-  connect (tree_, &QTreeWidget::itemClicked, this, [this] (QTreeWidgetItem* item) {
-    QString target= item->data (0, Qt::UserRole).toString ();
-    if (!target.isEmpty ()) emit outlineActivated (target);
-  });
+  connect (tree_, &QTreeWidget::itemClicked, this,
+           [this] (QTreeWidgetItem* item) {
+             QString target= item->data (0, Qt::UserRole).toString ();
+             if (!target.isEmpty ()) emit outlineActivated (target);
+           });
 }
 
 void
 OutlineWidget::buildTree (const QVector<PdfOutlineItem>& items,
-                          QTreeWidgetItem* parent) {
+                          QTreeWidgetItem*               parent) {
   for (const PdfOutlineItem& item : items) {
     QTreeWidgetItem* treeItem= (parent == nullptr)
-                                  ? new QTreeWidgetItem (tree_)
-                                  : new QTreeWidgetItem (parent);
+                                   ? new QTreeWidgetItem (tree_)
+                                   : new QTreeWidgetItem (parent);
     treeItem->setText (0, item.title);
     treeItem->setData (0, Qt::UserRole, QString::number (item.page));
     if (!item.title.isEmpty ()) {
@@ -59,11 +61,11 @@ OutlineWidget::buildTree (const QVector<PdfOutlineItem>& items,
 
 void
 OutlineWidget::buildTree (const QVector<OutlineItem>& items,
-                          QTreeWidgetItem* parent) {
+                          QTreeWidgetItem*            parent) {
   for (const OutlineItem& item : items) {
     QTreeWidgetItem* treeItem= (parent == nullptr)
-                                  ? new QTreeWidgetItem (tree_)
-                                  : new QTreeWidgetItem (parent);
+                                   ? new QTreeWidgetItem (tree_)
+                                   : new QTreeWidgetItem (parent);
     treeItem->setText (0, item.title);
     treeItem->setData (0, Qt::UserRole, item.target);
     if (!item.title.isEmpty ()) {
@@ -115,9 +117,9 @@ static OutlineItem
 parseOutlinePair (tmscm pair) {
   OutlineItem item;
   if (tmscm_is_pair (pair)) {
-    item.title = tmscm_to_qstring (tmscm_car (pair));
+    item.title= tmscm_to_qstring (tmscm_car (pair));
     if (tmscm_is_pair (tmscm_cdr (pair))) {
-      item.target = tmscm_to_qstring (tmscm_cadr (pair));
+      item.target= tmscm_to_qstring (tmscm_cadr (pair));
     }
   }
   return item;
@@ -130,7 +132,7 @@ OutlineWidget::loadDocumentOutline () {
   // 确保模块已加载（init-research.scm 中的 use-modules 可能未生效时兜底）
   if (!eval_scheme ("(defined? 'document-outline)")) {
     string texmacs_path= get_env ("TEXMACS_PATH");
-    string file_path= texmacs_path * "/progs/text/text-outline.scm";
+    string file_path   = texmacs_path * "/progs/text/text-outline.scm";
     eval_scheme_file (file_path);
   }
   tmscm result= eval_scheme ("(document-outline)");

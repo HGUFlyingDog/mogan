@@ -8,6 +8,7 @@
 #define QT_PDF_OUTLINE_WIDGET_HPP
 
 #include <QDockWidget>
+#include <QTimer>
 #include <QTreeWidget>
 
 #include "qt_pdf_reader_widget.hpp"
@@ -23,6 +24,8 @@ public:
   void setOutline (const QVector<OutlineItem>& outline);
   /** 从 Scheme 获取文档大纲并填充。返回值表示是否成功加载到内容。 */
   bool loadDocumentOutline ();
+  /** 开启/关闭编辑器模式实时刷新（文档变化时自动更新大纲） */
+  void setLiveRefresh (bool enable);
   void clear ();
   bool hasContent () const;
 
@@ -38,7 +41,11 @@ private:
   void buildTree (const QVector<OutlineItem>& items,
                   QTreeWidgetItem*               parent);
 
+  void maybeRefreshOutline ();
+
   QTreeWidget* tree_;
+  QTimer*     refreshTimer_;
+  bool        liveRefresh_;
 };
 
 #endif // QT_PDF_OUTLINE_WIDGET_HPP

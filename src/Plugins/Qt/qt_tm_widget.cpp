@@ -889,6 +889,15 @@ qt_tm_widget_rep::qt_tm_widget_rep (int mask, command _quit)
     pdfOutlineDock->setVisible (false);
     mw->addDockWidget (Qt::LeftDockWidgetArea, pdfOutlineDock);
 
+    // 编辑器模式：点击大纲条目 → Scheme 跳转（连接一次，始终有效）
+    QObject::connect (pdfOutlineDock, &OutlineWidget::outlineActivated,
+                      mw, [this] (const QString& target) {
+                        if (pdfTabMode) return; // PDF 模式由另一连接处理
+                        if (target.isEmpty ()) return;
+                        string path_str= from_qstring (target);
+                        call ("outline-go-to", object (path_str));
+                      });
+
     // 文档区域右上角浮动新建对话按钮
     chatSidebarToggleBtn= new QPushButton (cw);
     chatSidebarToggleBtn->setObjectName ("chat-tab-collapse-btn");
@@ -1128,6 +1137,8 @@ qt_tm_widget_rep::sync_startup_tab_mode () {
 
     // Disconnect toolbar when leaving PDF mode
     pdfToolBar->disconnectFrom ();
+    // 进入首页前关闭实时刷新
+    if (pdfOutlineDock) pdfOutlineDock->setLiveRefresh (false);
 
     update_visibility ();
 
@@ -1179,11 +1190,20 @@ qt_tm_widget_rep::sync_startup_tab_mode () {
 
     // Disconnect toolbar when leaving PDF mode
     pdfToolBar->disconnectFrom ();
-    // 离开 PDF/编辑器模式时隐藏目录 dock
-    if (pdfOutlineDock) pdfOutlineDock->setVisible (false);
+    // 离开 PDF/编辑器模式时隐藏目录 dock 并关闭实时刷新
+    if (pdfOutlineDock) {
+      pdfOutlineDock->setVisible (false);
+      pdfOutlineDock->setLiveRefresh (false);
+    }
 
     if (!chatTabMode) {
       show_widget_in_layout (editorWidget, layout);
+
+      // 编辑器模式：加载文档大纲到 outline dock 并开启实时刷新
+      if (pdfOutlineDock) {
+        pdfOutlineDock->loadDocumentOutline ();
+        pdfOutlineDock->setLiveRefresh (true);
+      }
 
       update_visibility ();
       flush_startup_deferred_chrome ();

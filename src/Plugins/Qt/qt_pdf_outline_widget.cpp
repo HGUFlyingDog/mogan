@@ -37,6 +37,30 @@ OutlineWidget::OutlineWidget (const QString& title, QWidget* parent)
     QString target= item->data (0, Qt::UserRole).toString ();
     if (!target.isEmpty ()) emit outlineActivated (target);
   });
+
+  // 实时刷新定时器：周期性检查并更新大纲
+  refreshTimer_->setInterval (500);
+  connect (refreshTimer_, &QTimer::timeout, this,
+          &OutlineWidget::maybeRefreshOutline);
+}
+
+void
+OutlineWidget::setLiveRefresh (bool enable) {
+  liveRefresh_= enable;
+  if (enable) {
+    refreshTimer_->start ();
+    maybeRefreshOutline ();
+  }
+  else {
+    refreshTimer_->stop ();
+  }
+}
+
+void
+OutlineWidget::maybeRefreshOutline () {
+  if (!liveRefresh_) return;
+  if (!isVisible ()) return;
+  loadDocumentOutline ();
 }
 
 void

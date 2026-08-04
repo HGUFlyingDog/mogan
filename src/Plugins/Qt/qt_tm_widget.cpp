@@ -1178,6 +1178,11 @@ qt_tm_widget_rep::sync_startup_tab_mode () {
     if (!chatTabMode) {
       show_widget_in_layout (editorWidget, layout);
 
+      // 编辑器模式：加载文档大纲到 outline dock
+      if (pdfOutlineDock) {
+        pdfOutlineDock->loadDocumentOutline ();
+      }
+
       update_visibility ();
       flush_startup_deferred_chrome ();
 

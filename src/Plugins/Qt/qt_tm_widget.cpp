@@ -1156,7 +1156,7 @@ qt_tm_widget_rep::sync_startup_tab_mode () {
         QObject::connect (pdfOutlineDock, &OutlineWidget::outlineActivated,
                           viewer, [viewer] (const QString& target) {
                             bool ok;
-                            int page= target.toInt (&ok);
+                            int  page= target.toInt (&ok);
                             if (ok && page >= 0) viewer->goToPage (page);
                           });
       }
